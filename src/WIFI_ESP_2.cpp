@@ -51,7 +51,7 @@ void display(String first) {
       lcd.print(first.substring(start, start + 15));
       start += 15;
 
-      delay(2000);
+      delay(5000);
     }
   }
 }
@@ -176,7 +176,7 @@ void setup() {
 void loop() {
   char stream_line[MAX_BUF_LEN];
   //char data[2][210];
-  char *data[10];
+  char *data[5];
   int data_version = -1;
   int data_stamp = -1;
   int data_count = -1;
@@ -232,6 +232,7 @@ void loop() {
           //  Serial.println(F("DATA LINE"));
           //  Serial.println(stream_line);
           if (data_version == -1) {
+            display(F("SETUP"), F("DATA UPDATE"));
             data_version = atoi(stream_line);
           } else if (data_stamp == -1) {
             data_stamp = atoi(stream_line);
@@ -250,10 +251,14 @@ void loop() {
           } else {
 
            // allocate the space first
-
+          //   Serial.println(F("sream line"));
            data[data_index] = (char * ) malloc(item_size * sizeof(char *));
+        //   Serial.println(stream_line);
+        //   Serial.println(item_size);
+
             if (data_index < data_count) {
               strcpy(data[data_index], stream_line);
+              //for (int temp =0 ; temp < i)
               data_index++;
             }
             item_timeout = -1 ;
@@ -264,10 +269,11 @@ void loop() {
         } else {
           if (i < MAX_BUF_LEN) {
             stream_line[i] = c;
+            i = i + 1;
           }
         }
 
-        i = i + 1;
+
       }
     }
   }

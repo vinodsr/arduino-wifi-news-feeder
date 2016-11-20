@@ -13,7 +13,7 @@
 SoftwareSerial Serial1(5, 6); // RX, TX
 #endif
 
-#define MAX_BUF_LEN 100
+#define MAX_BUF_LEN 300
 
 int status = WL_IDLE_STATUS; // the Wifi radio's status
 int speakerOut = 7;
@@ -175,19 +175,18 @@ void setup() {
 
 void loop() {
   char stream_line[MAX_BUF_LEN];
-  char data[2][210];
+  //char data[2][210];
+  char *data[10];
   int data_version = -1;
   int data_stamp = -1;
   int data_count = -1;
   int data_index = 0;
+  int item_size = -1;
+  int item_timeout = -1;
   unsigned int indx = 0;
-  unsigned int subindex = 0;
-  char tempdata[100];
-  unsigned int tmpindx = 0;
-  unsigned int commacount = 0;
 
   int waittime = 0;
-  String line1;
+//  String line1;
   String line2;
 
   int i = 0;
@@ -230,7 +229,6 @@ void loop() {
 
         if (c == '\n') {
           stream_line[i] = 0;
-          i = 0;
           //  Serial.println(F("DATA LINE"));
           //  Serial.println(stream_line);
           if (data_version == -1) {
@@ -239,15 +237,30 @@ void loop() {
             data_stamp = atoi(stream_line);
           } else if (data_count == -1) {
             data_count = atoi(stream_line);
+
+            //allcoate the rows for data .( latter)
+
+
+
+          } else if(item_timeout == -1) {
+            item_timeout = 0;
+            // no action required now
+          }  else if (item_size == -1) {
+              item_size = atoi(stream_line);
           } else {
-            // this is the data ..
-            //  Serial.println(F("DATA LINE"));
+
+           // allocate the space first
+
+           data[data_index] = (char * ) malloc(item_size * sizeof(char *));
             if (data_index < data_count) {
               strcpy(data[data_index], stream_line);
               data_index++;
             }
+            item_timeout = -1 ;
+            item_size = -1;
           }
-
+          //reset the i ;
+          i=0;
         } else {
           if (i < MAX_BUF_LEN) {
             stream_line[i] = c;
@@ -274,50 +287,19 @@ void loop() {
     display(F("NO DATA"));
   } else {
     // show the data .
-
+    waittime = 3;
     while (1) {
       // exit condition required ///
-      line1.remove(0);
+    //  line1.remove(0);
       line2.remove(0);
-      subindex = -1;
-      tmpindx = 0;
-      commacount = 0;
+      line2.concat(data[indx]);
 
-      while (1) {
-        subindex++;
-
-        if (data[indx][subindex] == ',' || data[indx][subindex] == 0 ||
-            tmpindx == 300) {
-
-          tempdata[tmpindx] = 0;
-          tmpindx = 0;
-          commacount++;
-
-          if (commacount == 1) {
-
-          } else if (commacount == 2) {
-            line1.concat(tempdata);
-          } else if (commacount == 3) {
-            line2.concat(tempdata);
-          } else if (commacount == 4) {
-            waittime = atoi(tempdata);
-          }
-
-        } else {
-          tempdata[tmpindx] = data[indx][subindex];
-          tmpindx++;
-        }
-
-        if (data[indx][subindex] == 0) {
-          break;
-        }
-      }
       // Assume we have everything ..
 
       Serial.println(F("parsing done"));
-      Serial.println(line1);
+      Serial.println(line2);
       Serial.println(waittime);
-      playToneA();
+      //playToneA();
       display(line2);
       delay(waittime * 1000);
 

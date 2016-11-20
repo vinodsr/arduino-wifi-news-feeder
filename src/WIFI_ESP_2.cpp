@@ -1,12 +1,4 @@
-/*
-  WiFiEsp example: ConnectWPA
 
-  This example connects to an encrypted WiFi network using an ESP8266 module.
-  Then it prints the  MAC address of the WiFi shield, the IP address obtained
-  and other network details.
-  For more details see:
-  http://yaab-arduino.blogspot.com/p/wifiesp-example-connect.html
-*/
 #include "pitches.h"
 #include <LiquidCrystal_SR.h>
 #include <WiFiEsp.h>
@@ -125,9 +117,6 @@ void setup() {
   lcd.begin(16, 2); // Initializing LCD
   // lcd.autoscroll();
 
-  lcd.home(); // Setting Cursor at Home i.e. 0,0
-
-  lcd.print("LiquidCrystal_SR");
   // initialize serial for debugging
   // initialize serial for ESP module
   Serial1.begin(9600);
@@ -139,7 +128,7 @@ void setup() {
   // //  while(1);
   // }
 
-  Serial.println(F("card initialized."));
+  //Serial.println(F("card initialized."));
 
   display(F("SETUP:..:"), F("WIFI INIT"));
 
